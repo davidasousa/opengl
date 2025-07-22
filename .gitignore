@@ -1,0 +1,6 @@
+# Ignore Executable
+exec/program.exe
+
+# Ignore Includes -> Add Build
+include
+include/*
