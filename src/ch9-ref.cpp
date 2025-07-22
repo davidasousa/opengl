@@ -134,19 +134,11 @@ main() {
 	// Bind VAO
 	glBindVertexArray(VAO);
 
-	// Creating VBO
-	unsigned int VBO;
-	glGenBuffers(1, &VBO); 
-
-	// Binding VBO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); // Binding Buffer Object To VAO
-	glBufferData(GL_ARRAY_BUFFER, verticies.size() * sizeof(float), verticies.data(), GL_STATIC_DRAW); // Sending The Triangle Data
-	
-	// Define Attribute Readings
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(0)); // Vertecies
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float))); // TexCoords
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	vertexBufferObject vbo;
+	vbo.bindArrayBuf();
+	vbo.bufferVertexAttrs(verticies, GL_STATIC_DRAW);
+	vbo.configVertexAttr(0, 3, 5, 0);
+	vbo.configVertexAttr(1, 2, 5, 3);
 
 	shaderProgramHandler shaderProgram(vertexShaderSource, fragmentShaderSource);
 	textureHandler shaderProgramTextures(shaderProgram.getShaderProgramId());

@@ -31,14 +31,14 @@ class
 vertexBufferObject {
 private:
 	unsigned int vbo;
+	GLenum usage; // How The VBO Will Be Drawn
 
 public:
-	vertexBufferObject();
-	unsigned int getVertexBufId();
-
+	vertexBufferObject(GLenum _usage);
 	void bindArrayBuf();
-	bool bufferVertexAttrs(std::vector<float>& verticies, GLenum usage);
+	bool bufferVertexAttrs(std::vector<float>& verticies); // Verticies Are Interleaved
 	bool configVertexAttr(int attrPos, int attrWidth, int attrStride, int attrOffset);
+	unsigned int getVertexBufId();
 };
 
 class 
