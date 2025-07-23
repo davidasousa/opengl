@@ -83,15 +83,18 @@ private:
 	glm::vec3 camPos;
 	glm::vec3 camTarget;
 
-	glm::vec3 camX; 
-	glm::vec3 camY;
-	glm::vec3 camZ;
+	glm::vec3 camBasisX; // Basis Vectors Define The Orthogonal Directions Of The Cameras View
+	glm::vec3 camBasisY;
+	glm::vec3 camBasisZ;
 
 	glm::mat4 lookAt;
 
+	void computeBasisVectors();
+
 public:
 	cameraHandler(posVector _camPos, posVector _camTarget);
-	glm::mat4 getLookAt();
+	void translate(shiftVector shift);
+	glm::mat4 getLookAt() const;
 };
 
 // Viewport Transformations
@@ -110,7 +113,7 @@ public:
 	void modelMatTranslate(shiftVector shift);
 	void modelMatRotate(float degreeStep, tiltVector tilt);
 
-	void viewSetLookAt(glm::mat4 lookAt);
+	void viewSetLookAt(const cameraHandler& camera);
 	void viewShiftCamera(shiftVector shift);
 
 	void projectionSetPerspective(float fovY, float aspectRatio, float nearPlaneDist, float farPlaneDist);

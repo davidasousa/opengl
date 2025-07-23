@@ -102,12 +102,27 @@ const char* fragmentShaderSource = R"GLSL(
 	}
 )GLSL";
 
-void 
-processInput(GLFWwindow *window) {
+static void 
+processInput(GLFWwindow* window, cameraHandler& camera) { // Polling Here Vs Callback/Interrupt Style
 	// Esc Triggers Window Close
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+
+	// WASD
+	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera.translate((shiftVector){-0.1f,0.0f,0.0f});
+	}
+	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera.translate((shiftVector){0.1f,0.0f,0.0f});
+	}
+	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera.translate((shiftVector){0.0f,0.0f,-0.1f});
+	}
+	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera.translate((shiftVector){0.0f, 0.0f,0.1f});
+	}
+	
 }
 
 int 
@@ -161,9 +176,11 @@ main() {
 	shaderProgramTextures.loadConfigTexture("src/recourses/awesomeface.png");
 	shaderProgramTextures.bindTextureUnits();
 
+	cameraHandler camera((posVector){0.0f, 0.0f, 10.0f}, (posVector){0.0f, 0.0f, 0.0f});	
+
 	// Continuous Render Window
 	while(!glfwWindowShouldClose(window)) {
-		processInput(window);
+		processInput(window, camera);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -172,14 +189,12 @@ main() {
 		
 		glBindVertexArray(VAO);
 
-		float camX = sin(glfwGetTime()) * radius, camZ = cos(glfwGetTime()) * radius;
-		cameraHandler camera((posVector){camX, 0.0f, camZ}, (posVector){0.0f, 0.0f, 0.0f});	
-
 		for(size_t idx = 0; idx < 10; idx++) {
 			viewportTransformations.modelMatTranslate(cubePositions[idx]);
 			viewportTransformations.modelMatRotate(glfwGetTime() * 40.0f * idx, (tiltVector){0.5f, 1.0f, 0.75f});
 
-			viewportTransformations.viewSetLookAt(camera.getLookAt());
+			viewportTransformations.viewSetLookAt(camera);
+
 			viewportTransformations.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
 
 			viewportTransformations.bindViewportTransform();

@@ -13,8 +13,8 @@ void viewportHandler::modelMatRotate(float degreeRotation, tiltVector tilt) {
 	modelMat = glm::rotate(modelMat, glm::radians(degreeRotation), glm::vec3(tilt.x, tilt.y, tilt.z));
 }
 
-void viewportHandler::viewSetLookAt(glm::mat4 lookAt) {
-	viewMat = lookAt;
+void viewportHandler::viewSetLookAt(const cameraHandler& camera) {
+	viewMat = camera.getLookAt();
 }
 
 void viewportHandler::viewShiftCamera(shiftVector shift) {
