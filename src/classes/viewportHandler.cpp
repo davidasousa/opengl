@@ -5,12 +5,20 @@ viewportHandler::viewportHandler(unsigned int _shaderProgram) :
 
 }
 
+void viewportHandler::modelMatTranslate(shiftVector shift) {
+	modelMat = glm::translate(modelMat, glm::vec3(shift.x, shift.y, shift.z));
+}
+
 void viewportHandler::modelMatRotate(float degreeRotation, tiltVector tilt) {
 	modelMat = glm::rotate(modelMat, glm::radians(degreeRotation), glm::vec3(tilt.x, tilt.y, tilt.z));
 }
 
-void viewportHandler::viewShiftCamera(shiftVector tilt) {
-	viewMat = glm::translate(viewMat, glm::vec3(tilt.x, tilt.y, tilt.z));
+void viewportHandler::viewSetLookAt(glm::mat4 lookAt) {
+	viewMat = lookAt;
+}
+
+void viewportHandler::viewShiftCamera(shiftVector shift) {
+	viewMat = glm::translate(viewMat, glm::vec3(shift.x, shift.y, shift.z));
 }
 
 void viewportHandler::projectionSetPerspective(float fovY, float aspectRatio, float nearPlaneDist, float farPlaneDist) {

@@ -160,7 +160,7 @@ main() {
 	shaderProgramTextures.loadConfigTexture("src/recourses/container.jpg");
 	shaderProgramTextures.loadConfigTexture("src/recourses/awesomeface.png");
 	shaderProgramTextures.bindTextureUnits();
-	
+
 	// Continuous Render Window
 	while(!glfwWindowShouldClose(window)) {
 		processInput(window);
@@ -172,12 +172,14 @@ main() {
 		
 		glBindVertexArray(VAO);
 
-		for(size_t idx = 0; idx < 10; idx++) {
-			float angle = 20.0f * idx;
-			viewportTransformations.modelMatTranslate(cubePositions[idx]);
-			viewportTransformations.modelMatRotate(angle, (tiltVector){0.5f, 1.0f, 0.75f});
+		float camX = sin(glfwGetTime()) * radius, camZ = cos(glfwGetTime()) * radius;
+		cameraHandler camera((posVector){camX, 0.0f, camZ}, (posVector){0.0f, 0.0f, 0.0f});	
 
-			viewportTransformations.viewShiftCamera((shiftVector){0.0f, 0.0f, -3.0f});
+		for(size_t idx = 0; idx < 10; idx++) {
+			viewportTransformations.modelMatTranslate(cubePositions[idx]);
+			viewportTransformations.modelMatRotate(glfwGetTime() * 40.0f * idx, (tiltVector){0.5f, 1.0f, 0.75f});
+
+			viewportTransformations.viewSetLookAt(camera.getLookAt());
 			viewportTransformations.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
 
 			viewportTransformations.bindViewportTransform();

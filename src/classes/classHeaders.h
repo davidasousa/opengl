@@ -26,6 +26,7 @@ enum fileFormat { ERR = -1, JPG, PNG };
 // Structs
 typedef struct { float x; float y; float z; } tiltVector;
 typedef struct { float x; float y; float z; } shiftVector;
+typedef struct { float x; float y; float z; } posVector;
 
 class 
 vertexBufferObject {
@@ -76,6 +77,23 @@ public:
 	void bindTextures(); 		 	// Bind Textures To Texture Units (In Rendering)
 };
 
+class
+cameraHandler {
+private:
+	glm::vec3 camPos;
+	glm::vec3 camTarget;
+
+	glm::vec3 camX; 
+	glm::vec3 camY;
+	glm::vec3 camZ;
+
+	glm::mat4 lookAt;
+
+public:
+	cameraHandler(posVector _camPos, posVector _camTarget);
+	glm::mat4 getLookAt();
+};
+
 // Viewport Transformations
 class 
 viewportHandler {
@@ -88,9 +106,15 @@ private:
 
 public:
 	viewportHandler(unsigned int _shaderProgram);
+
+	void modelMatTranslate(shiftVector shift);
 	void modelMatRotate(float degreeStep, tiltVector tilt);
-	void viewShiftCamera(shiftVector tilt);
+
+	void viewSetLookAt(glm::mat4 lookAt);
+	void viewShiftCamera(shiftVector shift);
+
 	void projectionSetPerspective(float fovY, float aspectRatio, float nearPlaneDist, float farPlaneDist);
+
 	void bindViewportTransform();
 
 };
