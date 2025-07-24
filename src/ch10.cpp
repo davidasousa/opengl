@@ -7,7 +7,13 @@
 #include <cmath>
 
 // Including Custom Classes
-#include "classes/classHeaders.h"
+#include "classes/Types.h"
+
+#include "classes/VertexBufferObject.h"
+#include "classes/ShaderProgram.h"
+#include "classes/Texture.h"
+#include "classes/Camera.h"
+#include "classes/Viewport.h"
 
 std::vector<float> verticies = {
  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 36 x 5 {1,2,3} -> VertexCoords {4,5} -> TexCoords
@@ -101,26 +107,25 @@ const char* fragmentShaderSource = R"GLSL(
 		FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
 	}
 )GLSL";
-
+// Polling Here Vs Callback/Interrupt Style
 static void 
-processInput(GLFWwindow* window, cameraHandler& camera) { // Polling Here Vs Callback/Interrupt Style
+processInput(GLFWwindow* window, Camera& cam, float dT) { 
 	// Esc Triggers Window Close
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
-
 	// WASD
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		camera.translate((shiftVector){-0.1f,0.0f,0.0f});
+		cam.translatePos((shiftVector){dT * -2.5f, 0.0f, 0.0f});
 	}
 	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		camera.translate((shiftVector){0.1f,0.0f,0.0f});
+		cam.translatePos((shiftVector){dT * 2.5f, 0.0f, 0.0f});
 	}
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		camera.translate((shiftVector){0.0f,0.0f,-0.1f});
+		cam.translatePos((shiftVector){0.0f, 0.0f, dT * -2.5f});
 	}
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		camera.translate((shiftVector){0.0f, 0.0f,0.1f});
+		cam.translatePos((shiftVector){0.0f, 0.0f, dT * 2.5f});
 	}
 	
 }
@@ -136,21 +141,27 @@ main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Creating A Window
-	GLFWwindow* window = glfwCreateWindow(800, 600, "MyWindow", NULL, NULL);
+	float windowX = 800.0f, windowY = 600.0f;
+	GLFWwindow* window = glfwCreateWindow(windowX, windowY, "MyWindow", NULL, NULL);
 	if(window == NULL) {
 		std::cout << "Failed To Create GLFW Window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
-	glfwMakeContextCurrent(window);
 
+	// Window Config
+	glfwMakeContextCurrent(window);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	
+	float prevX = windowX / 2.0f;
+	float prevY = windowY / 2.0f;
+	
 	// Loading Glad
 	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
 
-	float windowX = 800.0f, windowY = 600.0f;
 	float aspectRatio = windowX / windowY;
 	glViewport(0, 0, windowX, windowY);
 	glEnable(GL_DEPTH_TEST); // Z Depth Conditional Rendering
@@ -162,42 +173,53 @@ main() {
 	// Bind VAO
 	glBindVertexArray(VAO);
 
-	vertexBufferObject vbo;
+	VertexBufferObject vbo;
 	vbo.bindArrayBuf();
 	vbo.bufferVertexAttrs(verticies, GL_STATIC_DRAW);
 	vbo.configVertexAttr(0, 3, 5, 0);
 	vbo.configVertexAttr(1, 2, 5, 3);
 
-	shaderProgramHandler shaderProgram(vertexShaderSource, fragmentShaderSource);
-	textureHandler shaderProgramTextures(shaderProgram.getShaderProgramId());
-	viewportHandler viewportTransformations(shaderProgram.getShaderProgramId());	
+	ShaderProgram shaderProgram(vertexShaderSource, fragmentShaderSource);
+	Texture texture(shaderProgram.getShaderProgram());
+	Viewport viewport(shaderProgram.getShaderProgram());	
 
-	shaderProgramTextures.loadConfigTexture("src/recourses/container.jpg");
-	shaderProgramTextures.loadConfigTexture("src/recourses/awesomeface.png");
-	shaderProgramTextures.bindTextureUnits();
+	texture.loadConfigTexture("src/recourses/container.jpg");
+	texture.loadConfigTexture("src/recourses/awesomeface.png");
+	texture.bindTextureUnits();
 
-	cameraHandler camera((posVector){0.0f, 0.0f, 10.0f}, (posVector){0.0f, 0.0f, 0.0f});	
+	Camera camera((posVector){0.0f, 0.0f, -10.0f}, (posVector){0.0f, 0.0f, 0.0f});	
+
+	// Input Handlers
+	/*
+	MouseHandler mouseHandler(camera);
+	glfwSetCursorPosCallback(window, mouseHandler.mouseCallback);
+	glfwSetWindowUserPointer(window, &mouseHandler);
+	*/
+
+	// Frame Render Managers
+	float deltaTime = 0.0f;
+	float prevFrameTime = 0.0f;
 
 	// Continuous Render Window
 	while(!glfwWindowShouldClose(window)) {
-		processInput(window, camera);
+		processInput(window, camera, deltaTime);
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shaderProgramTextures.bindTextures();
+		texture.bindTextures();
 		
 		glBindVertexArray(VAO);
 
 		for(size_t idx = 0; idx < 10; idx++) {
-			viewportTransformations.modelMatTranslate(cubePositions[idx]);
-			viewportTransformations.modelMatRotate(glfwGetTime() * 40.0f * idx, (tiltVector){0.5f, 1.0f, 0.75f});
+			viewport.modelMatTranslate(cubePositions[idx]);
+			viewport.modelMatRotate(glfwGetTime() * 40.0f * idx, (tiltVector){0.5f, 1.0f, 0.75f});
 
-			viewportTransformations.viewSetLookAt(camera);
+			viewport.viewSetLookAt(camera);
 
-			viewportTransformations.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
+			viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
 
-			viewportTransformations.bindViewportTransform();
+			viewport.bindViewportTransform();
 			glDrawArrays(GL_TRIANGLES, 0, 36);	
 		}
 
@@ -205,6 +227,12 @@ main() {
 
 		glfwSwapBuffers(window); // Back < -- > Front
 		glfwPollEvents();
+
+		// After All Processing & Rendering Update Previous Values -> Render Time, MousePos...
+
+		float currentTime = glfwGetTime();
+		deltaTime = currentTime - prevFrameTime;
+		prevFrameTime = currentTime;
 	}
 
 	glfwTerminate();

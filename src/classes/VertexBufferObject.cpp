@@ -1,14 +1,14 @@
-#include "classHeaders.h"
+#include "VertexBufferObject.h"
 
-vertexBufferObject::vertexBufferObject() {	
+VertexBufferObject::VertexBufferObject() {	
 	glGenBuffers(1, &vbo);
 }
 
-unsigned int vertexBufferObject::getVertexBufId() {
+unsigned int VertexBufferObject::getVertexBufId() {
 	return vbo;
 }
 
-void vertexBufferObject::bindArrayBuf() {
+void VertexBufferObject::bindArrayBuf() {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }
 
@@ -16,10 +16,10 @@ static bool isBound(unsigned int vboId) {
 	GLint boundVBO;
 	glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &boundVBO);
 	if(boundVBO != vboId) { return false; }
-	else { return true; }
+	return true;
 }
 
-bool vertexBufferObject::bufferVertexAttrs(std::vector<float>& verticies, GLenum usage) {
+bool VertexBufferObject::bufferVertexAttrs(std::vector<float>& verticies, GLenum usage) {
 	if(!isBound(getVertexBufId())) { return false; }
 
 	size_t verticiesSize = sizeof(float) * verticies.size();
@@ -27,7 +27,7 @@ bool vertexBufferObject::bufferVertexAttrs(std::vector<float>& verticies, GLenum
 	return true;
 }
 
-bool vertexBufferObject::configVertexAttr(int attrPos, int attrWidth, int attrStride, int attrOffset) {
+bool VertexBufferObject::configVertexAttr(int attrPos, int attrWidth, int attrStride, int attrOffset) {
 	if(!isBound(getVertexBufId())) { return false; }
 
 	size_t strideSize = sizeof(float) * attrStride;

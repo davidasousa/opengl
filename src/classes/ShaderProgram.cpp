@@ -1,6 +1,6 @@
-#include "classHeaders.h"
+#include "ShaderProgram.h"
 
-shaderProgramHandler::shaderProgramHandler(const char*& vertexSrc, const char*& fragmentSrc) {
+ShaderProgram::ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc) {
 	shaderProgram = glCreateProgram();
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -23,4 +23,4 @@ shaderProgramHandler::shaderProgramHandler(const char*& vertexSrc, const char*& 
 	shaderLinkageError = static_cast<bool>(success);
 }
 
-unsigned int shaderProgramHandler::getShaderProgramId() const { return shaderProgram; }
+unsigned int ShaderProgram::getShaderProgram() const { return shaderProgram; }

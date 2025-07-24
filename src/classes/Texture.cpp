@@ -1,10 +1,12 @@
-#include "classHeaders.h"
+#include "Texture.h"
 
-// Including STBI Fileloader
+// Including STBI Fileloader -> Must Be In CPP File
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stb_image.h"
 
-textureHandler::textureHandler(unsigned int _shaderProgram) : 
+enum fileFormat { ERR = -1, JPG, PNG };
+
+Texture::Texture(unsigned int _shaderProgram) : 
 	availTexturePos(0), shaderProgram(_shaderProgram) {
 
 	std::fill(textureUnits.begin(), textureUnits.end(), 0);
@@ -25,7 +27,7 @@ getInternalFormat(std::string filepath) {
 
 // Returns Pos On Load, -1 On Error
 void 
-textureHandler::loadConfigTexture(const std::string filepath) {
+Texture::loadConfigTexture(const std::string filepath) {
 	if(availTexturePos == textureUnits.size()) { return; }
 
 	int width, height, nrChannels;	
@@ -56,7 +58,7 @@ textureHandler::loadConfigTexture(const std::string filepath) {
 }
 
 void 
-textureHandler::bindTextureUnits() {
+Texture::bindTextureUnits() {
 	glUseProgram(shaderProgram);
 	for(size_t idx = 0; idx < availTexturePos; idx++) {
 		std::string textureName = std::string("texture") + std::to_string(idx + 1);
@@ -65,7 +67,7 @@ textureHandler::bindTextureUnits() {
 }
 
 void 
-textureHandler::bindTextures() {
+Texture::bindTextures() {
 	glUseProgram(shaderProgram);
 	for(size_t idx = 0; idx < availTexturePos; idx++) {
 		glActiveTexture(GL_TEXTURE0 + idx);
