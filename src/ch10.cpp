@@ -117,16 +117,16 @@ processInput(GLFWwindow* window, Camera& cam, float dT) {
 	}
 	// WASD
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cam.translatePosX(dT);
-	}
-	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cam.translatePosX(-1 * dT);
-	}
-	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		cam.translatePosZ(dT);
 	}
-	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		cam.translatePosZ(-1 * dT);
+	}
+	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cam.translatePosX(dT);
+	}
+	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		cam.translatePosX(-1 * dT);
 	}
 	
 }
@@ -166,13 +166,11 @@ main() {
 													 
 	Camera camera((posVector){0.0f, 0.0f, -3.0f});	
 
-	// Input Handlers
-	
+	// Input Handlers	
 	MouseHandler mouseHandler(camera, windowX / 2.0f, windowY / 2.0f);
 	
 	glfwSetCursorPosCallback(window, &mouseHandler.mouseCallback);
 	glfwSetWindowUserPointer(window, &mouseHandler);
-
 
 	// Creating VAO
 	unsigned int VAO;
@@ -232,6 +230,8 @@ main() {
 		float currentTime = glfwGetTime();
 		deltaTime = currentTime - prevFrameTime;
 		prevFrameTime = currentTime;
+
+		std::cout << 1.0f / deltaTime << std::endl << std::flush;
 	}
 
 	glfwTerminate();

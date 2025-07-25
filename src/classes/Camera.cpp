@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(posVector _camPos) : 
-	pitch(0.0f), yaw(-90.0f), camSpeed(0.01f) {
+	pitch(0.0f), yaw(-90.0f), camSpeed(2.0f) {
 			
 	camPos = glm::vec3(_camPos.x, _camPos.y, _camPos.z);
 	camDir = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -20,21 +20,21 @@ Camera::getLookAt() const { return lookAt; }
 
 void 
 Camera::translatePosX(float dX) {
-	camPos += glm::normalize(glm::cross(camDir, camUp)) * camSpeed;
+	camPos += camSpeed * dX * glm::normalize(glm::cross(camDir, camUp));
 	findLookAt();
 }
 
 void 
 Camera::translatePosZ(float dZ) {
-	camPos += camSpeed * camDir;
+	camPos += camSpeed * dZ * camDir;
 	findLookAt();
 }
 
 void 
 Camera::setCamera(float xoffset, float yoffset) {
 
-	pitch = std::min(pitch - yoffset, 89.0f);
-	yaw = std::min(yaw + xoffset, 89.0f);
+	yaw += xoffset;
+	pitch = std::clamp(pitch - yoffset, -89.99f, 89.99f); // Mouse Inverted By Default
 
 	glm::vec3 direction;
 	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
