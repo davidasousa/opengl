@@ -14,6 +14,7 @@
 #include "classes/Texture.h"
 #include "classes/Camera.h"
 #include "classes/Viewport.h"
+#include "classes/MouseHandler.h"
 
 std::vector<float> verticies = {
  -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, // 36 x 5 {1,2,3} -> VertexCoords {4,5} -> TexCoords
@@ -107,25 +108,25 @@ const char* fragmentShaderSource = R"GLSL(
 		FragColor = mix(texture(texture1, TexCoord), texture(texture2, TexCoord), 0.2);
 	}
 )GLSL";
-// Polling Here Vs Callback/Interrupt Style
-static void 
+
+static void // Polling
 processInput(GLFWwindow* window, Camera& cam, float dT) { 
 	// Esc Triggers Window Close
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
 	// WASD
-	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		cam.translatePos((shiftVector){dT * -2.5f, 0.0f, 0.0f});
-	}
-	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		cam.translatePos((shiftVector){dT * 2.5f, 0.0f, 0.0f});
+	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		cam.translatePosX(dT);
 	}
 	if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		cam.translatePos((shiftVector){0.0f, 0.0f, dT * -2.5f});
+		cam.translatePosX(-1 * dT);
 	}
-	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		cam.translatePos((shiftVector){0.0f, 0.0f, dT * 2.5f});
+	if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		cam.translatePosZ(dT);
+	}
+	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		cam.translatePosZ(-1 * dT);
 	}
 	
 }
@@ -153,9 +154,6 @@ main() {
 	glfwMakeContextCurrent(window);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
-	float prevX = windowX / 2.0f;
-	float prevY = windowY / 2.0f;
-	
 	// Loading Glad
 	if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
@@ -165,6 +163,16 @@ main() {
 	float aspectRatio = windowX / windowY;
 	glViewport(0, 0, windowX, windowY);
 	glEnable(GL_DEPTH_TEST); // Z Depth Conditional Rendering
+													 
+	Camera camera((posVector){0.0f, 0.0f, -3.0f});	
+
+	// Input Handlers
+	
+	MouseHandler mouseHandler(camera, windowX / 2.0f, windowY / 2.0f);
+	
+	glfwSetCursorPosCallback(window, &mouseHandler.mouseCallback);
+	glfwSetWindowUserPointer(window, &mouseHandler);
+
 
 	// Creating VAO
 	unsigned int VAO;
@@ -186,15 +194,6 @@ main() {
 	texture.loadConfigTexture("src/recourses/container.jpg");
 	texture.loadConfigTexture("src/recourses/awesomeface.png");
 	texture.bindTextureUnits();
-
-	Camera camera((posVector){0.0f, 0.0f, -10.0f}, (posVector){0.0f, 0.0f, 0.0f});	
-
-	// Input Handlers
-	/*
-	MouseHandler mouseHandler(camera);
-	glfwSetCursorPosCallback(window, mouseHandler.mouseCallback);
-	glfwSetWindowUserPointer(window, &mouseHandler);
-	*/
 
 	// Frame Render Managers
 	float deltaTime = 0.0f;

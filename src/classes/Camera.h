@@ -1,6 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <algorithm>
+
 // Including GLM Math Library
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,25 +10,27 @@
 
 #include "Types.h"
 
+
 class
 Camera {
 private:
 	glm::vec3 camPos;
-	glm::vec3 targetPos;
+	glm::vec3 camDir;
+	glm::vec3 camUp;
 
-	glm::vec3 camBasisX; // Basis Vectors Define The Orthogonal Directions Of The Cameras View
-	glm::vec3 camBasisY;
-	glm::vec3 camBasisZ;
+	float pitch;
+	float yaw;
+	float camSpeed;
 
 	glm::mat4 lookAt;
 
-	void computeBasisVectors();
-
 public:
-	Camera(posVector _camPos, posVector _camTarget);
-	void translatePos(shiftVector shift);
-	void translateTarget(shiftVector shift);
+	Camera(posVector _camPos);
+	void findLookAt();
 	glm::mat4 getLookAt() const;
+	void translatePosX(float dX);
+	void translatePosZ(float dZ);
+	void setCamera(float xoffset, float yoffset);
 };
 
 #endif

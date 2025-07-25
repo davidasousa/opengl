@@ -20,9 +20,12 @@ getInternalFormat(std::string filepath) {
 	if(dotPos == std::string::npos) { return ERR; }
 	else { filetype =	filepath.substr(dotPos + 1); }
 
-	if(filetype == "jpg") { return JPG; }
-	else if(filetype == "png") { return PNG; }
-	else { return ERR; }
+	return [](std::string filetype){
+		if(filetype == "jpg") { return JPG; }
+		if(filetype == "png") { return PNG; }
+		return ERR;
+	}(filetype);
+
 }
 
 // Returns Pos On Load, -1 On Error

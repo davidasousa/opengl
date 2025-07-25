@@ -1,19 +1,23 @@
-/*
-#include "classHeaders.h"
+#include "MouseHandler.h"
 
-MouseHandler::mouseHandler(Camera& _camera) :
-	camera(_camera), prevX(0.0f), prevY(0.0f) {
-
+MouseHandler::MouseHandler(Camera& _camera, float _prevX, float _prevY) :
+	camera(_camera), prevX(_prevX), prevY(_prevY), sensitivity(0.05f) {
+	
 }
 
-static void 
+void 
 MouseHandler::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
-	MouseHandler& instance = *(static_cast<const camera*>(glfwGetWindowUserPointer(window)));
-	instance.shiftCameraTarget({xpos, ypos});
+	MouseHandler& instance = *(static_cast<MouseHandler*>(glfwGetWindowUserPointer(window)));
+	instance.handleMouseDrag(static_cast<float>(xpos), static_cast<float>(ypos));
 }
 
 void
-MouseHandler::shiftCameraTarget(const float xpos, const float ypos) {
-	camera.translateTarget(glm::vec3(0.0f, 0.0f, 0.0f));
+MouseHandler::handleMouseDrag(float xpos, float ypos) {
+	float xoffset = sensitivity * (xpos - prevX);
+	float yoffset = sensitivity * (ypos - prevY);
+
+	camera.setCamera(xoffset, yoffset);
+
+	prevX = xpos;
+	prevY = ypos;
 }
-*/
