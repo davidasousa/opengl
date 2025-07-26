@@ -24,6 +24,9 @@ private:
 	float yaw;
 	float camSpeed;
 
+	bool sprintFlag;
+	float sprintScale;
+
 	glm::mat4 lookAt;
 
 public:
@@ -31,8 +34,10 @@ public:
 	void findLookAt();
 	glm::mat4 getLookAt() const;
 	void translatePosX(float dX);
+	void translatePosY(float dY);
 	void translatePosZ(float dZ);
 	void setCamera(float xoffset, float yoffset);
+	void toggleSprint();
 };
 
 #endif

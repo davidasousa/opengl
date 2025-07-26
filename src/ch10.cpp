@@ -115,6 +115,7 @@ processInput(GLFWwindow* window, Camera& cam, float dT) {
 	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
+
 	// WASD
 	if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		cam.translatePosZ(dT);
@@ -127,6 +128,11 @@ processInput(GLFWwindow* window, Camera& cam, float dT) {
 	}
 	if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		cam.translatePosX(-1 * dT);
+	}
+
+	// Toggle Sprint
+	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		cam.toggleSprint();
 	}
 	
 }
@@ -169,7 +175,8 @@ main() {
 	// Input Handlers	
 	MouseHandler mouseHandler(camera, windowX / 2.0f, windowY / 2.0f);
 	
-	glfwSetCursorPosCallback(window, &mouseHandler.mouseCallback);
+	glfwSetCursorPosCallback(window, &mouseHandler.dragCallback);
+	glfwSetScrollCallback(window, &mouseHandler.scrollCallback);
 	glfwSetWindowUserPointer(window, &mouseHandler);
 
 	// Creating VAO
@@ -230,8 +237,6 @@ main() {
 		float currentTime = glfwGetTime();
 		deltaTime = currentTime - prevFrameTime;
 		prevFrameTime = currentTime;
-
-		std::cout << 1.0f / deltaTime << std::endl << std::flush;
 	}
 
 	glfwTerminate();

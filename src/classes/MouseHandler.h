@@ -16,12 +16,15 @@ private:
 	Camera& camera;
 	float prevX;
 	float prevY;
-	float sensitivity;
+	float dragSens;
+	float scrollSens;
 
 public:
 	MouseHandler(Camera& _camera, float _prevX, float _prevY);
-	static void mouseCallback(GLFWwindow* window, double xpos, double ypos); // Must Be Static C Func Ptr
-	void handleMouseDrag(float xpos, float ypos);
+	static void dragCallback(GLFWwindow* window, double xpos, double ypos); // Must Be Static C Func Ptr
+	static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+	void handleDrag(float xpos, float ypos);
+	void handleScroll(float xoffset, float yoffset);
 
 };
 

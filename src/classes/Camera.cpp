@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(posVector _camPos) : 
-	pitch(0.0f), yaw(-90.0f), camSpeed(2.0f) {
+	pitch(0.0f), yaw(-90.0f), camSpeed(2.0f), sprintFlag(false), sprintScale(3.0f) {
 			
 	camPos = glm::vec3(_camPos.x, _camPos.y, _camPos.z);
 	camDir = glm::vec3(0.0f, 0.0f, 1.0f);
@@ -20,13 +20,25 @@ Camera::getLookAt() const { return lookAt; }
 
 void 
 Camera::translatePosX(float dX) {
-	camPos += camSpeed * dX * glm::normalize(glm::cross(camDir, camUp));
+	glm::vec3 updateVec = camSpeed * dX * glm::normalize(glm::cross(camDir, camUp));
+	if(sprintFlag) { updateVec *= sprintScale; }
+	camPos += updateVec;
+	findLookAt();
+}
+
+void 
+Camera::translatePosY(float dY) {
+	glm::vec3 updateVec = camSpeed * dY * camUp;
+	if(sprintFlag) { updateVec *= sprintScale; }
+	camPos += updateVec;
 	findLookAt();
 }
 
 void 
 Camera::translatePosZ(float dZ) {
-	camPos += camSpeed * dZ * camDir;
+	glm::vec3 updateVec = camSpeed * dZ * camDir;
+	if(sprintFlag) { updateVec *= sprintScale; }
+	camPos += updateVec;
 	findLookAt();
 }
 
@@ -43,4 +55,9 @@ Camera::setCamera(float xoffset, float yoffset) {
 
 	camDir = glm::normalize(direction);
 	findLookAt();
+}
+
+void
+Camera::toggleSprint() {
+	sprintFlag = !sprintFlag;
 }
