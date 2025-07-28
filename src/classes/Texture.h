@@ -12,6 +12,8 @@
 #define MAX_TEXTURE_UNITS 16
 #define UNBIND_VAO 0
 
+enum class fileFormat { ERR = -1, JPG, PNG };
+
 class 
 Texture {
 private:

@@ -4,8 +4,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stb_image.h"
 
-enum fileFormat { ERR = -1, JPG, PNG };
-
 Texture::Texture(unsigned int _shaderProgram) : 
 	availTexturePos(0), shaderProgram(_shaderProgram) {
 
@@ -17,13 +15,13 @@ getInternalFormat(std::string filepath) {
 	size_t dotPos = filepath.find_last_of('.');
 	std::string filetype;
 
-	if(dotPos == std::string::npos) { return ERR; }
+	if(dotPos == std::string::npos) { return fileFormat::ERR; }
 	else { filetype =	filepath.substr(dotPos + 1); }
 
 	return [](std::string filetype){
-		if(filetype == "jpg") { return JPG; }
-		if(filetype == "png") { return PNG; }
-		return ERR;
+		if(filetype == "jpg") { return fileFormat::JPG; }
+		if(filetype == "png") { return fileFormat::PNG; }
+		return fileFormat::ERR;
 	}(filetype);
 
 }
@@ -46,10 +44,10 @@ Texture::loadConfigTexture(const std::string filepath) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	switch (getInternalFormat(filepath)) {
-	case JPG:
+	case fileFormat::JPG:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		break;
-	case PNG:
+	case fileFormat::PNG:
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		break;
 	}

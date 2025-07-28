@@ -34,5 +34,5 @@ void Viewport::bindViewportTransform() {
 	glUniformMatrix4fv(viewMatLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
 	glUniformMatrix4fv(projectionMatLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));
 	
-	*this = Viewport{shaderProgram};
+	*this = Viewport(shaderProgram);
 }

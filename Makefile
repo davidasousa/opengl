@@ -22,7 +22,7 @@ INCLUDE= -I$(GLFW_INC_PATH) -I$(GLAD_INC_PATH)
 all: clean
 
 build-ch%:
-	$(CC) -std=c++17 src/glad.c src/ch$*.cpp src/classes/* \
+	$(CC) -std=c++17 src/glad.c src/ch$*.cpp src/classes/* src/shapes/* \
 	$(LINKS) $(INCLUDE) -o exec/program.exe
 
 test:

@@ -32,12 +32,14 @@ VertexBufferObject::bufferVertexAttrs(std::vector<float>& verticies, GLenum usag
 }
 
 bool 
-VertexBufferObject::configVertexAttr(int attrPos, int attrWidth, int attrStride, int attrOffset) {
+VertexBufferObject::configVertexAttrs(std::vector<attrVec>& attrs) {
 	if(!isBound(getVertexBufId())) { return false; }
 
-	size_t strideSize = sizeof(float) * attrStride;
-	size_t offsetSize = sizeof(float) * attrOffset;
-	glVertexAttribPointer(attrPos, attrWidth, GL_FLOAT, GL_FALSE, strideSize , (void*)(offsetSize));
-	glEnableVertexAttribArray(attrPos);
+	for(attrVec attr : attrs) {
+		size_t strideSize = sizeof(float) * attr.attrStride;
+		size_t offsetSize = sizeof(float) * attr.attrOffset;
+		glVertexAttribPointer(attr.attrPos, attr.attrWidth, GL_FLOAT, GL_FALSE, strideSize , (void*)(offsetSize));
+		glEnableVertexAttribArray(attr.attrPos);
+	}
 	return true;
 }
