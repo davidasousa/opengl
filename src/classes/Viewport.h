@@ -26,6 +26,7 @@ public:
 
 	void modelMatTranslate(shiftVector shift);
 	void modelMatRotate(float degreeStep, tiltVector tilt);
+	void modelMatScale(scaleVector scale);
 
 	void viewSetLookAt(const Camera& camera);
 	void viewShiftCamera(shiftVector shift);

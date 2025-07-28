@@ -13,6 +13,10 @@ void Viewport::modelMatRotate(float degreeRotation, tiltVector tilt) {
 	modelMat = glm::rotate(modelMat, glm::radians(degreeRotation), glm::vec3(tilt.x, tilt.y, tilt.z));
 }
 
+void Viewport::modelMatScale(scaleVector scale) {
+	modelMat = glm::scale(modelMat, glm::vec3(scale.x, scale.y, scale.z));
+}
+
 void Viewport::viewSetLookAt(const Camera& camera) {
 	viewMat = camera.getLookAt();
 }

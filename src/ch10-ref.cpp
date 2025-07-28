@@ -165,6 +165,7 @@ main() {
 
 		viewport.modelMatTranslate((shiftVector){0.0f, 0.0f, 0.0f});
 		viewport.modelMatRotate(glfwGetTime() * 40.0f, (tiltVector){0.5f, 1.0f, 0.75f});
+		viewport.modelMatScale((scaleVector){1.0f, 2.0f, 1.0f});
 
 		viewport.viewSetLookAt(camera);
 
