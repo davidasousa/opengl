@@ -24,7 +24,7 @@ private:
 
 public:
 	Texture(unsigned int _shaderProgram);
-	void loadConfigTexture(const std::string filepath);
+	void loadConfigTexture(const std::string filepath, bool flipImage);
 	void bindTextureUnits(); 	// Bind Texture Units To Shader
 	void bindTextures(); 		 	// Bind Textures To Texture Units (In Rendering)
 };

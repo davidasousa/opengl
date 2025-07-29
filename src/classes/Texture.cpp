@@ -28,11 +28,13 @@ getInternalFormat(std::string filepath) {
 
 // Returns Pos On Load, -1 On Error
 void 
-Texture::loadConfigTexture(const std::string filepath) {
+Texture::loadConfigTexture(const std::string filepath, bool flipImage) {
 	if(availTexturePos == textureUnits.size()) { return; }
 
 	int width, height, nrChannels;	
+	if(flipImage) { stbi_set_flip_vertically_on_load(true); }
 	unsigned char *data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
+	if(flipImage) { stbi_set_flip_vertically_on_load(false); }
 	if(!data) { std::cout << stbi_failure_reason() << std::endl; }
 
 	glGenTextures(1, &textureUnits[availTexturePos]);

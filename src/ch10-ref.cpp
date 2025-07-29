@@ -142,30 +142,27 @@ main() {
 	Texture texture(shaderProgram.getShaderProgram());
 	Viewport viewport(shaderProgram.getShaderProgram());	
 
-	texture.loadConfigTexture("src/recourses/graniteTexture.jpg");
-	texture.loadConfigTexture("src/recourses/awesomeface.png");
+	texture.loadConfigTexture("src/recourses/graniteTexture.jpg", false);
+	texture.loadConfigTexture("src/recourses/awesomeface.png", true);
 	texture.bindTextureUnits();
 
 	// Frame Render Managers
 	float deltaTime = 0.0f;
 	float prevFrameTime = 0.0f;
 
-	mouseHandler.dragCallback(window, 400.0f, 300.0f);
-
 	// Continuous Render Window
 	while(!glfwWindowShouldClose(window)) {
 		processInput(window, camera, deltaTime);
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		texture.bindTextures();
 		
 		glBindVertexArray(VAO);
 
-		viewport.modelMatTranslate((shiftVector){0.0f, 0.0f, 0.0f});
-		viewport.modelMatRotate(glfwGetTime() * 40.0f, (tiltVector){0.5f, 1.0f, 0.75f});
-		viewport.modelMatScale((scaleVector){1.0f, 2.0f, 1.0f});
+		viewport.modelMatTranslate((shiftVector){0.0f, 0.0f, 1.0f});
+		viewport.modelMatScale((scaleVector){2.0f, 1.0f, 1.0f}); // Twice In X Axis
 
 		viewport.viewSetLookAt(camera);
 
