@@ -46,8 +46,12 @@ std::vector<float> Rectangle::verticies = {
 
 };
 
-std::vector<attrVec> Rectangle::verticiesFormat = { {0, 3, 5, 0}, {1, 2, 5, 3} };
+std::vector<attrVec> Rectangle::verticiesFormat = { {0, 3, 5, 0} };
+std::vector<attrVec> Rectangle::verticiesTexCoordsFormat = { {0, 3, 5, 0}, {1, 2, 5, 3} };
 
 std::vector<float>& Rectangle::getVerticies() { return std::ref(verticies); }
 
-std::vector<attrVec>& Rectangle::getVerticiesFormat() { return std::ref(verticiesFormat); }
+std::vector<attrVec>& Rectangle::getFormat(bool incTexCoords) { 
+	if(incTexCoords) { return std::ref(verticiesTexCoordsFormat); }
+	else { return std::ref(verticiesFormat); }
+}

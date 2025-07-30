@@ -1,6 +1,8 @@
 #include "ShaderProgram.h"
 
 ShaderProgram::ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc) {
+	colorManagerVec.clear();	
+
 	shaderProgram = glCreateProgram();
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -23,4 +25,18 @@ ShaderProgram::ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc) {
 	shaderLinkageError = static_cast<bool>(success);
 }
 
-unsigned int ShaderProgram::getShaderProgram() const { return shaderProgram; }
+unsigned int 
+ShaderProgram::getShaderProgram() const { return shaderProgram; }
+
+void 
+ShaderProgram::addColorManager(ColorManager cm) {
+	colorManagerVec.push_back(cm);		
+}
+
+void 
+ShaderProgram::bindColorManager(int idx) {
+	ColorManager cm = colorManagerVec[idx];
+	int colorLoc = glGetUniformLocation(shaderProgram, cm.getName());
+
+	glUniform3fv(colorLoc, 1, glm::value_ptr(cm.getColor()));
+}

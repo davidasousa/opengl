@@ -71,7 +71,6 @@ Texture::bindTextureUnits() {
 
 void 
 Texture::bindTextures() {
-	glUseProgram(shaderProgram);
 	for(size_t idx = 0; idx < availTexturePos; idx++) {
 		glActiveTexture(GL_TEXTURE0 + idx);
 		glBindTexture(GL_TEXTURE_2D, textureUnits[idx]);
