@@ -18,8 +18,8 @@ private:
 public:
 	ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc);
 	unsigned int getShaderProgram() const;
-	void addColorManager(ColorManager cm);
-	void bindColorManager(int idx);
+	void addColor(ColorManager cm);
+	void bindColors();
 
 };
 

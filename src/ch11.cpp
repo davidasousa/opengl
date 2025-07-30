@@ -5,6 +5,7 @@
 // General Includes
 #include <iostream>
 #include <cmath>
+#include <vector>
 
 // Including Custom Classes
 #include "classes/Types.h"
@@ -17,12 +18,6 @@
 #include "classes/MouseHandler.h"
 
 #include "shapes/Rectangle.h"
-
-
-shiftVector translations[] {
-	{0.0f, 0.0f, 1.0f}, 
-	{3.0f, -1.0f, 1.0f}
-};
 
 // Basic Vertex Shader
 const char* vertexShaderSource = R"GLSL(
@@ -39,8 +34,8 @@ const char* vertexShaderSource = R"GLSL(
 	}
 )GLSL";
 
-// Fragment Shader
-const char* fragmentShaderSource = R"GLSL(
+// Fragment Shader - Light Source
+const char* lightFragmentShaderSource = R"GLSL(
 	#version 330 core
 	out vec4 FragColor;
 
@@ -51,6 +46,25 @@ const char* fragmentShaderSource = R"GLSL(
 		FragColor = vec4(lightColor, 1.0);
 	}
 )GLSL";
+
+// Fragment Shader - Object
+const char* objectFragmentShaderSource = R"GLSL(
+	#version 330 core
+	out vec4 FragColor;
+
+	uniform vec3 lightColor;
+	uniform vec3 objectColor;
+
+	void main()
+	{
+		FragColor = vec4(lightColor * objectColor, 1.0);
+	}
+)GLSL";
+
+const char* fragmentShaders[] = {
+	lightFragmentShaderSource,
+	objectFragmentShaderSource
+};
 
 static void // Polling
 processInput(GLFWwindow* window, Camera& cam, float dT) { 
@@ -126,24 +140,25 @@ main() {
 	Rectangle rectangleModel;
 
 	// Creating Object VAO
-	unsigned int lightVAO;
-	glGenVertexArrays(1, &lightVAO);
+	unsigned int vao;
+	glGenVertexArrays(1, &vao);
 
-	glBindVertexArray(lightVAO);
+	glBindVertexArray(vao);
 
-	VertexBufferObject rectangleVBO;
-	rectangleVBO.bindArrayBuf();
-	rectangleVBO.bufferVertexAttrs(rectangleModel.getVerticies(), GL_STATIC_DRAW);
-	rectangleVBO.configVertexAttrs(rectangleModel.getFormat(false));
+	VertexBufferObject vbo;
+	vbo.bindArrayBuf();
+	vbo.bufferVertexAttrs(rectangleModel.getVerticies(), GL_STATIC_DRAW);
+	vbo.configVertexAttrs(rectangleModel.getFormat(false));
 
+	//ColorManager objectManager("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+
+	ShaderProgram shaderProgram(vertexShaderSource, lightFragmentShaderSource);
 	ColorManager lightManager("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	ColorManager objectManager("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+	shaderProgram.addColor(lightManager);
 
-	ShaderProgram shaderProgram(vertexShaderSource, fragmentShaderSource);
-	shaderProgram.addColorManager(lightManager);
-	shaderProgram.addColorManager(objectManager);
-
-	Viewport viewport(shaderProgram.getShaderProgram());	
+	std::vector<unsigned int> shaders; // Prevent needless copying and add rendering of multiple boxes with seperate frag shaders
+	shaders.push_back(shaderProgram.getShaderProgram());
+	Viewport viewport(shaders);
 
 	// Setting Colors
 	// Frame Render Managers
@@ -157,25 +172,26 @@ main() {
 		glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glBindVertexArray(lightVAO);
+		glBindVertexArray(vao);
 
 		glUseProgram(shaderProgram.getShaderProgram());
-		shaderProgram.bindColorManager(0);
+		shaderProgram.bindColors();
 
 		viewport.modelMatTranslate((shiftVector){0.0f, 0.0f, 1.0f});
 		viewport.viewSetLookAt(camera);
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
+
 		viewport.bindViewportTransform();
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 
 		glBindVertexArray(UNBIND_VAO);
 
-		glfwSwapBuffers(window); // Back < -- > Front
+		// Back < -- > Front
+		glfwSwapBuffers(window); 
 		glfwPollEvents();
 
 		// After All Processing & Rendering Update Previous Values -> Render Time, MousePos...
-
 		float currentTime = glfwGetTime();
 		deltaTime = currentTime - prevFrameTime;
 		prevFrameTime = currentTime;

@@ -29,14 +29,14 @@ unsigned int
 ShaderProgram::getShaderProgram() const { return shaderProgram; }
 
 void 
-ShaderProgram::addColorManager(ColorManager cm) {
+ShaderProgram::addColor(ColorManager cm) {
 	colorManagerVec.push_back(cm);		
 }
 
 void 
-ShaderProgram::bindColorManager(int idx) {
-	ColorManager cm = colorManagerVec[idx];
-	int colorLoc = glGetUniformLocation(shaderProgram, cm.getName());
-
-	glUniform3fv(colorLoc, 1, glm::value_ptr(cm.getColor()));
+ShaderProgram::bindColors() {
+	for(ColorManager cm : colorManagerVec) {
+		int colorLoc = glGetUniformLocation(shaderProgram, cm.getName());
+		glUniform3fv(colorLoc, 1, glm::value_ptr(cm.getColor()));
+	}
 }

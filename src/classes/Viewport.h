@@ -9,20 +9,23 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <vector>
+
 #include "Camera.h"
 #include "Types.h"
 
 class 
 Viewport {
 private:
-	unsigned int shaderProgram;
+	std::vector<unsigned int> shaders;
 
 	glm::mat4 modelMat; 			// Object Translations + Scaling -> Global World Space
 	glm::mat4 viewMat; 			  // Camera Translations
 	glm::mat4 projectionMat;  // Perspective Matrix
 
 public:
-	Viewport(unsigned int _shaderProgram);
+	Viewport(std::vector<unsigned int> _shaders);
+	void addShader(unsigned int sp);
 
 	void modelMatTranslate(shiftVector shift);
 	void modelMatRotate(float degreeStep, tiltVector tilt);
