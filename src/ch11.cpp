@@ -161,12 +161,7 @@ main() {
 	objProgram2.addColorUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	objProgram2.addColorUniform("objectColor", glm::vec3(0.4f, 0.7f, 1.0f));
 
-	// Add Shader Programs To The Viewport
-	std::vector<unsigned int> shaders = { 
-		objProgram1.getShaderProgram(),
-		objProgram2.getShaderProgram() 
-	}; 
-	Viewport viewport(&shaders);
+	Viewport viewport;
 
 	// Continuous Render Window
 	while(!glfwWindowShouldClose(window)) {
@@ -184,7 +179,7 @@ main() {
 		viewport.modelMatTranslate((shiftVector){0.0f, 0.0f, 1.0f});
 		viewport.viewSetLookAt(camera);
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
-		viewport.bindViewportTransform(0);
+		viewport.bindViewportTransform(objProgram1.getShaderProgram());
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 
@@ -196,7 +191,7 @@ main() {
 		viewport.modelMatTranslate((shiftVector){3.0f, 0.0f, 1.0f});
 		viewport.viewSetLookAt(camera);
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
-		viewport.bindViewportTransform(1);
+		viewport.bindViewportTransform(objProgram2.getShaderProgram());
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 

@@ -1,17 +1,8 @@
 #include "Viewport.h"
 
-Viewport::Viewport(std::vector<unsigned int>* _shadersAddr) : 
-	modelMat(glm::mat4(1.0f)), viewMat(glm::mat4(1.0f)), shaders(_shadersAddr) {	
+Viewport::Viewport() : 
+	modelMat(glm::mat4(1.0f)), viewMat(glm::mat4(1.0f)) {	
 
-}
-
-Viewport&
-Viewport::operator=(Viewport&& other) noexcept { 
-	this -> modelMat = glm::mat4(1.0f);
-	this -> viewMat = glm::mat4(1.0f);
-	this -> shaders = other.shaders;
-
-	return *this;
 }
 
 void 
@@ -45,9 +36,7 @@ Viewport::projectionSetPerspective(float fovY, float aspectRatio, float nearPlan
 }
 
 void 
-Viewport::bindViewportTransform(int idx) {
-	unsigned int sp = (*shaders)[idx];
-
+Viewport::bindViewportTransform(unsigned int sp) {
 	int modelMatLoc = glGetUniformLocation(sp, "modelMat");
 	int viewMatLoc = glGetUniformLocation(sp, "viewMat");
 	int projectionMatLoc = glGetUniformLocation(sp, "projectionMat");
@@ -56,5 +45,5 @@ Viewport::bindViewportTransform(int idx) {
 	glUniformMatrix4fv(viewMatLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
 	glUniformMatrix4fv(projectionMatLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));		
 
-	*this = std::move(Viewport(shaders));
+	*this = Viewport();
 }
