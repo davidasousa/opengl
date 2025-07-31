@@ -32,7 +32,7 @@ VertexBufferObject::bufferVertexAttrs(std::vector<float>& verticies, GLenum usag
 }
 
 bool 
-VertexBufferObject::configVertexAttrs(std::vector<attrVec>& attrs) {
+VertexBufferObject::configVertexAttrs(std::vector<attrVec> attrs) {
 	if(!isBound(getVertexBufId())) { return false; }
 
 	for(attrVec attr : attrs) {

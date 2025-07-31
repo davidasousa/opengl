@@ -20,7 +20,7 @@ public:
 
 	void bindArrayBuf();
 	bool bufferVertexAttrs(std::vector<float>& verticies, GLenum usage);
-	bool configVertexAttrs(std::vector<attrVec>& attrs);
+	bool configVertexAttrs(std::vector<attrVec> attrs);
 };
 
 #endif
