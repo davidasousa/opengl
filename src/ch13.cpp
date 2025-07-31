@@ -171,11 +171,11 @@ main() {
 	vbo.configVertexAttrs(Rectangle::attrs);
 
 	ShaderProgram objProgram1(vertexShaderSource, lightFragmentShaderSource);
-	objProgram1.addColorUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram1.addUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
 	ShaderProgram objProgram2(vertexShaderSource, objectFragmentShaderSource);
-	objProgram2.addColorUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	objProgram2.addColorUniform("objectColor", glm::vec3(0.4f, 0.7f, 1.0f));
+	objProgram2.addUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram2.addUniform("objectColor", glm::vec3(0.4f, 0.7f, 1.0f));
 
 	Viewport viewport;
 

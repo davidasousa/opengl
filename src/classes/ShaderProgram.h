@@ -9,21 +9,21 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <vector>
-
-typedef struct { const char* name; glm::vec3 vec; } uniformV3;
+#include <string>
+#include <unordered_map>
+#include <utility>
 
 class 
 ShaderProgram {
 private:
 	unsigned int shaderProgram;
 	bool shaderLinkageError;
-	std::vector<uniformV3> colorUniforms;
+	std::unordered_map<std::string, glm::vec3> uniforms;
 
 public:
 	ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc);
 	unsigned int getShaderProgram() const;
-	void addColorUniform(const char* name, glm::vec3 vec);
+	void addUniform(std::string name, glm::vec3 vec);
 	void bindColors();
 
 };
