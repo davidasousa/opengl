@@ -123,6 +123,10 @@ main() {
 		return -1;
 	}
 
+	// Frame Render Managers
+	float deltaTime = 0.0f;
+	float prevFrameTime = 0.0f;
+
 	float aspectRatio = windowX / windowY;
 	glViewport(0, 0, windowX, windowY);
 	glEnable(GL_DEPTH_TEST); // Z Depth Conditional Rendering
@@ -150,19 +154,19 @@ main() {
 	vbo.bufferVertexAttrs(rectangleModel.getVerticies(), GL_STATIC_DRAW);
 	vbo.configVertexAttrs(rectangleModel.getFormat(false));
 
-	//ColorManager objectManager("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
+	ShaderProgram objProgram1(vertexShaderSource, lightFragmentShaderSource);
+	objProgram1.addColorUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-	ShaderProgram shaderProgram(vertexShaderSource, lightFragmentShaderSource);
-	shaderProgram.addColorUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	ShaderProgram objProgram2(vertexShaderSource, objectFragmentShaderSource);
+	objProgram2.addColorUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram2.addColorUniform("objectColor", glm::vec3(0.4f, 0.7f, 1.0f));
 
+	// Add Shader Programs To The Viewport
 	std::vector<unsigned int> shaders = { 
-		shaderProgram.getShaderProgram() 
+		objProgram1.getShaderProgram(),
+		objProgram2.getShaderProgram() 
 	}; 
 	Viewport viewport(&shaders);
-
-	// Frame Render Managers
-	float deltaTime = 0.0f;
-	float prevFrameTime = 0.0f;
 
 	// Continuous Render Window
 	while(!glfwWindowShouldClose(window)) {
@@ -173,17 +177,30 @@ main() {
 
 		glBindVertexArray(vao);
 
-		glUseProgram(shaderProgram.getShaderProgram());
-		shaderProgram.bindColors();
+		// Light Source 	
+		glUseProgram(objProgram1.getShaderProgram());
+		objProgram1.bindColors();
 
 		viewport.modelMatTranslate((shiftVector){0.0f, 0.0f, 1.0f});
 		viewport.viewSetLookAt(camera);
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
-
-		viewport.bindViewportTransform();
+		viewport.bindViewportTransform(0);
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 
+		// Object
+
+		glUseProgram(objProgram2.getShaderProgram());
+		objProgram2.bindColors();
+
+		viewport.modelMatTranslate((shiftVector){3.0f, 0.0f, 1.0f});
+		viewport.viewSetLookAt(camera);
+		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
+		viewport.bindViewportTransform(1);
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);	
+
+		// Unbind
 		glBindVertexArray(UNBIND_VAO);
 
 		// Back < -- > Front

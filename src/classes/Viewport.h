@@ -36,7 +36,7 @@ public:
 
 	void projectionSetPerspective(float fovY, float aspectRatio, float nearPlaneDist, float farPlaneDist);
 
-	void bindViewportTransform();
+	void bindViewportTransform(int idx);
 
 };
 

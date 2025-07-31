@@ -45,15 +45,16 @@ Viewport::projectionSetPerspective(float fovY, float aspectRatio, float nearPlan
 }
 
 void 
-Viewport::bindViewportTransform() {
-	for(unsigned int sp : *shaders) {
-		int modelMatLoc = glGetUniformLocation(sp, "modelMat");
-		int viewMatLoc = glGetUniformLocation(sp, "viewMat");
-		int projectionMatLoc = glGetUniformLocation(sp, "projectionMat");
+Viewport::bindViewportTransform(int idx) {
+	unsigned int sp = (*shaders)[idx];
 
-		glUniformMatrix4fv(modelMatLoc, 1, GL_FALSE, glm::value_ptr(modelMat));
-		glUniformMatrix4fv(viewMatLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
-		glUniformMatrix4fv(projectionMatLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));		
-	}
+	int modelMatLoc = glGetUniformLocation(sp, "modelMat");
+	int viewMatLoc = glGetUniformLocation(sp, "viewMat");
+	int projectionMatLoc = glGetUniformLocation(sp, "projectionMat");
+
+	glUniformMatrix4fv(modelMatLoc, 1, GL_FALSE, glm::value_ptr(modelMat));
+	glUniformMatrix4fv(viewMatLoc, 1, GL_FALSE, glm::value_ptr(viewMat));
+	glUniformMatrix4fv(projectionMatLoc, 1, GL_FALSE, glm::value_ptr(projectionMat));		
+
 	*this = std::move(Viewport(shaders));
 }

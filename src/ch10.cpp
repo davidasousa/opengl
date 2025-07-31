@@ -220,10 +220,9 @@ main() {
 			viewport.modelMatRotate(glfwGetTime() * 40.0f * idx, (tiltVector){0.5f, 1.0f, 0.75f});
 
 			viewport.viewSetLookAt(camera);
-
 			viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
-
 			viewport.bindViewportTransform();
+
 			glDrawArrays(GL_TRIANGLES, 0, 36);	
 		}
 
