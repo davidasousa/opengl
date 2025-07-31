@@ -11,22 +11,19 @@
 
 #include <vector>
 
-typedef struct {
-	const char* name;
-	glm::vec3 rgb;
-} ColorUniform;
+typedef struct { const char* name; glm::vec3 vec; } uniformV3;
 
 class 
 ShaderProgram {
 private:
 	unsigned int shaderProgram;
 	bool shaderLinkageError;
-	std::vector<ColorUniform> colorUniforms;
+	std::vector<uniformV3> colorUniforms;
 
 public:
 	ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc);
 	unsigned int getShaderProgram() const;
-	void addColorUniform(const char* name, glm::vec3 rgb);
+	void addColorUniform(const char* name, glm::vec3 vec);
 	void bindColors();
 
 };

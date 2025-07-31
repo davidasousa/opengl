@@ -29,14 +29,14 @@ unsigned int
 ShaderProgram::getShaderProgram() const { return shaderProgram; }
 
 void 
-ShaderProgram::addColorUniform(const char* name, glm::vec3 rgb) {
-	colorUniforms.push_back((ColorUniform){name, rgb});		
+ShaderProgram::addColorUniform(const char* name, glm::vec3 vec) {
+	colorUniforms.push_back((uniformV3){ name, vec });		
 }
 
 void 
 ShaderProgram::bindColors() {
-	for(ColorUniform cu : colorUniforms) {
+	for(uniformV3 cu : colorUniforms) {
 		int colorLoc = glGetUniformLocation(shaderProgram, cu.name);
-		glUniform3fv(colorLoc, 1, glm::value_ptr(cu.rgb));
+		glUniform3fv(colorLoc, 1, glm::value_ptr(cu.vec));
 	}
 }
