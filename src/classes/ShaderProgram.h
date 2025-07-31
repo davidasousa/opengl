@@ -4,21 +4,29 @@
 // GLAD Dynamic OpenGL Includes
 #include <glad/glad.h>
 
+// Including GLM Math Library
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <vector>
 
-#include "ColorManager.h"
+typedef struct {
+	const char* name;
+	glm::vec3 rgb;
+} ColorUniform;
 
 class 
 ShaderProgram {
 private:
 	unsigned int shaderProgram;
 	bool shaderLinkageError;
-	std::vector<ColorManager> colorManagerVec;
+	std::vector<ColorUniform> colorUniforms;
 
 public:
 	ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc);
 	unsigned int getShaderProgram() const;
-	void addColor(ColorManager cm);
+	void addColorUniform(const char* name, glm::vec3 rgb);
 	void bindColors();
 
 };

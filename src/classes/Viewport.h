@@ -17,15 +17,15 @@
 class 
 Viewport {
 private:
-	std::vector<unsigned int> shaders;
+	std::vector<unsigned int>* shaders;
 
 	glm::mat4 modelMat; 			// Object Translations + Scaling -> Global World Space
 	glm::mat4 viewMat; 			  // Camera Translations
 	glm::mat4 projectionMat;  // Perspective Matrix
 
 public:
-	Viewport(std::vector<unsigned int> _shaders);
-	void addShader(unsigned int sp);
+	Viewport(std::vector<unsigned int>* _shadersAddr);
+	Viewport& operator=(Viewport&& other) noexcept; // Move Assignment
 
 	void modelMatTranslate(shiftVector shift);
 	void modelMatRotate(float degreeStep, tiltVector tilt);

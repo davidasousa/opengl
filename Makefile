@@ -26,7 +26,7 @@ build-ch%:
 	$(LINKS) $(INCLUDE) -o exec/program.exe
 
 test:
-	~/$(DIRNAME)/$(RUNPATH)/program.exe
+	./$(RUNPATH)/program.exe
 
 clean:
 	rm $(RUNPATH)/program.exe

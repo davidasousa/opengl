@@ -1,7 +1,7 @@
 #include "ShaderProgram.h"
 
 ShaderProgram::ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc) {
-	colorManagerVec.clear();	
+	colorUniforms.clear();	
 
 	shaderProgram = glCreateProgram();
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -29,14 +29,14 @@ unsigned int
 ShaderProgram::getShaderProgram() const { return shaderProgram; }
 
 void 
-ShaderProgram::addColor(ColorManager cm) {
-	colorManagerVec.push_back(cm);		
+ShaderProgram::addColorUniform(const char* name, glm::vec3 rgb) {
+	colorUniforms.push_back((ColorUniform){name, rgb});		
 }
 
 void 
 ShaderProgram::bindColors() {
-	for(ColorManager cm : colorManagerVec) {
-		int colorLoc = glGetUniformLocation(shaderProgram, cm.getName());
-		glUniform3fv(colorLoc, 1, glm::value_ptr(cm.getColor()));
+	for(ColorUniform cu : colorUniforms) {
+		int colorLoc = glGetUniformLocation(shaderProgram, cu.name);
+		glUniform3fv(colorLoc, 1, glm::value_ptr(cu.rgb));
 	}
 }

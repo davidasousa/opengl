@@ -153,14 +153,13 @@ main() {
 	//ColorManager objectManager("objectColor", glm::vec3(1.0f, 0.5f, 0.31f));
 
 	ShaderProgram shaderProgram(vertexShaderSource, lightFragmentShaderSource);
-	ColorManager lightManager("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	shaderProgram.addColor(lightManager);
+	shaderProgram.addColorUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 
-	std::vector<unsigned int> shaders; // Prevent needless copying and add rendering of multiple boxes with seperate frag shaders
-	shaders.push_back(shaderProgram.getShaderProgram());
-	Viewport viewport(shaders);
+	std::vector<unsigned int> shaders = { 
+		shaderProgram.getShaderProgram() 
+	}; 
+	Viewport viewport(&shaders);
 
-	// Setting Colors
 	// Frame Render Managers
 	float deltaTime = 0.0f;
 	float prevFrameTime = 0.0f;
