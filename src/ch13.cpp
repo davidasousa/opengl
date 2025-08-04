@@ -25,8 +25,8 @@ const char* vertexShaderSource = R"GLSL(
 	layout (location = 0) in vec3 aPos;
 	layout (location = 1) in vec3 aNormal;
 
-	// out vec3 FragPos;
-	// out vec3 Normal;
+	out vec3 FragPos;
+	out vec3 Normal;
 
 	uniform mat4 modelMat;
 	uniform mat4 viewMat;
@@ -35,8 +35,8 @@ const char* vertexShaderSource = R"GLSL(
 	void main() 
 	{
 		gl_Position = projectionMat * viewMat * modelMat * vec4(aPos, 1.0);
-		// FragPos = vec3(modelMat * aPos, 1.0f);
-		// Normal = aNormal;
+		FragPos = vec3(modelMat * vec4(aPos, 1.0f)); // Model Matrix Yields The Position Of The Object
+		Normal = aNormal;
 	}
 )GLSL";
 
@@ -58,21 +58,26 @@ const char* objectFragmentShaderSource = R"GLSL(
 	#version 330 core
 	out vec4 FragColor;
 
-	// in vec3 FragPos;
-	// in vec3 Normal;
+	in vec3 FragPos;
+	in vec3 Normal;
 
 	uniform vec3 lightColor;
 	uniform vec3 objectColor;
 
-	// uniform vec3 lightPos;
+	uniform vec3 lightPos;
 
 	float ambientStrength = 0.1f;	
 
 	vec3 ambientLight = ambientStrength * lightColor;
-	vec3 result = ambientLight * objectColor;
+	vec3 ambient = ambientLight * objectColor;
 
-	// vec3 lightDif = normalize(lightPos - FragPos);
-	// vec3 norm = normalize(Normal);
+	vec3 norm = normalize(Normal);
+	vec3 lightDir = normalize(lightPos - FragPos);
+
+	float diff = max(dot(norm, lightDir), 0.0);
+	vec3 diffuse = diff * lightColor;
+
+	vec3 result = (ambient + diffuse) * objectColor;
 
 	void main()
 	{
@@ -176,6 +181,7 @@ main() {
 	ShaderProgram objProgram2(vertexShaderSource, objectFragmentShaderSource);
 	objProgram2.addUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
 	objProgram2.addUniform("objectColor", glm::vec3(0.4f, 0.7f, 1.0f));
+	objProgram2.addUniform("lightPos", glm::vec3(0.0f, 0.0f, 1.0f));
 
 	Viewport viewport;
 
@@ -190,7 +196,7 @@ main() {
 
 		// Light Source 	
 		glUseProgram(objProgram1.getShaderProgram());
-		objProgram1.bindColors();
+		objProgram1.bindUniforms();
 
 		viewport.modelMatTranslate((shiftVector){0.0f, 0.0f, 1.0f});
 		viewport.viewSetLookAt(camera);
@@ -202,9 +208,9 @@ main() {
 		// Object
 
 		glUseProgram(objProgram2.getShaderProgram());
-		objProgram2.bindColors();
+		objProgram2.bindUniforms();
 
-		viewport.modelMatTranslate((shiftVector){3.0f, 0.0f, 1.0f});
+		viewport.modelMatTranslate((shiftVector){3.0f, 2.0f, -1.0f});
 		viewport.viewSetLookAt(camera);
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
 

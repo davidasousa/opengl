@@ -24,7 +24,7 @@ public:
 	ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc);
 	unsigned int getShaderProgram() const;
 	void addUniform(std::string name, glm::vec3 vec);
-	void bindColors();
+	void bindUniforms();
 
 };
 

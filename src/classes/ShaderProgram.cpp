@@ -33,8 +33,8 @@ ShaderProgram::addUniform(std::string name, glm::vec3 vec) {
 }
 
 void 
-ShaderProgram::bindColors() {
-	for(const std::pair<std::string, glm::vec3>& uniform : uniforms) { // Fix Adding/binding iterators
+ShaderProgram::bindUniforms() {
+	for(const std::pair<std::string, glm::vec3>& uniform : uniforms) {
 		int colorLoc = glGetUniformLocation(shaderProgram, uniform.first.c_str());
 		glUniform3fv(colorLoc, 1, glm::value_ptr(uniform.second));
 	}
