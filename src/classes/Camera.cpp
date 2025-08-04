@@ -15,6 +15,9 @@ Camera::findLookAt() {
 	lookAt = glm::lookAt(camPos, camPos + camDir, camUp);
 }
 
+glm::vec3
+Camera::getCamPos() const { return camPos; }
+
 glm::mat4 
 Camera::getLookAt() const { return lookAt; }
 

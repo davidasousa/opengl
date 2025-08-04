@@ -65,8 +65,10 @@ const char* objectFragmentShaderSource = R"GLSL(
 	uniform vec3 objectColor;
 
 	uniform vec3 lightPos;
+	uniform vec3 viewPos;
 
 	float ambientStrength = 0.1f;	
+	float specularStrength = 0.5f;
 
 	vec3 ambientLight = ambientStrength * lightColor;
 	vec3 ambient = ambientLight * objectColor;
@@ -77,7 +79,13 @@ const char* objectFragmentShaderSource = R"GLSL(
 	float diff = max(dot(norm, lightDir), 0.0);
 	vec3 diffuse = diff * lightColor;
 
-	vec3 result = (ambient + diffuse) * objectColor;
+	vec3 viewDir = normalize(viewPos - FragPos);
+	vec3 reflectDir = reflect(-lightDir, norm);
+
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128);
+	vec3 specular = specularStrength * spec * lightColor;
+
+	vec3 result = (ambient + diffuse + specular) * objectColor;
 
 	void main()
 	{
@@ -208,9 +216,10 @@ main() {
 		// Object
 
 		glUseProgram(objProgram2.getShaderProgram());
+		objProgram2.addUniform("viewPos", camera.getCamPos());
 		objProgram2.bindUniforms();
 
-		viewport.modelMatTranslate((shiftVector){3.0f, 2.0f, -1.0f});
+		viewport.modelMatTranslate((shiftVector){2.0f, 1.0f, -1.0f});
 		viewport.viewSetLookAt(camera);
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
 

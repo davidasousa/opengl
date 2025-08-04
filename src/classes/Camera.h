@@ -33,6 +33,7 @@ public:
 	Camera(posVector _camPos);
 	void findLookAt();
 	glm::mat4 getLookAt() const;
+	glm::vec3 getCamPos() const;
 	void translatePosX(float dX);
 	void translatePosY(float dY);
 	void translatePosZ(float dZ);
