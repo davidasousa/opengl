@@ -33,9 +33,19 @@ ShaderProgram::addUniform(std::string name, glm::vec3 vec) {
 }
 
 void 
+ShaderProgram::addUniform(std::string name, float fl) {
+	floatUniforms[name] = fl;		
+}
+
+void 
 ShaderProgram::bindUniforms() {
 	for(const std::pair<std::string, glm::vec3>& uniform : uniforms) {
-		int colorLoc = glGetUniformLocation(shaderProgram, uniform.first.c_str());
-		glUniform3fv(colorLoc, 1, glm::value_ptr(uniform.second));
+		int uniformLoc = glGetUniformLocation(shaderProgram, uniform.first.c_str());
+		glUniform3fv(uniformLoc, 1, glm::value_ptr(uniform.second));
+	}
+
+	for(const std::pair<std::string, float>& fl : floatUniforms) {
+		int floatLoc = glGetUniformLocation(shaderProgram, fl.first.c_str());
+		glUniform1f(floatLoc, fl.second);
 	}
 }

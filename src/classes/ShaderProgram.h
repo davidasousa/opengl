@@ -19,11 +19,13 @@ private:
 	unsigned int shaderProgram;
 	bool shaderLinkageError;
 	std::unordered_map<std::string, glm::vec3> uniforms;
+	std::unordered_map<std::string, float> floatUniforms;
 
 public:
 	ShaderProgram(const char*& vertexSrc, const char*& fragmentSrc);
 	unsigned int getShaderProgram() const;
 	void addUniform(std::string name, glm::vec3 vec);
+	void addUniform(std::string name, float fl);
 	void bindUniforms();
 
 };

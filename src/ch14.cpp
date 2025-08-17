@@ -61,32 +61,34 @@ const char* objectFragmentShaderSource = R"GLSL(
 	in vec3 FragPos;
 	in vec3 Normal;
 
-	uniform vec3 lightColor;
-	uniform vec3 objectColor;
+	struct Material {
+		vec3 ambient;
+		vec3 diffuse;
+		vec3 specular;
+		float shininess;
+	};
 
+	uniform Material material;
+	uniform vec3 lightColor;
 	uniform vec3 lightPos;
 	uniform vec3 viewPos;
 
-	float ambientStrength = 0.1f;	
-	float specularStrength = 0.5f;
+	// Ambient
+	vec3 ambient = lightColor * material.ambient;
 
+	// Diffuse
 	vec3 norm = normalize(Normal);
-
 	vec3 lightDir = normalize(lightPos - FragPos);
-
-	vec3 ambientLight = ambientStrength * lightColor;
-	vec3 ambient = ambientLight * objectColor;
-
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * lightColor;
-
+	vec3 diffuse = lightColor * (diff * material.diffuse);
+	
+	// Specular
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	vec3 specular = lightColor * (spec * material.specular);
 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128);
-	vec3 specular = specularStrength * spec * lightColor;
-
-	vec3 result = (ambient + diffuse + specular) * objectColor;
+	vec3 result = (ambient + diffuse + specular);
 
 	void main()
 	{
@@ -184,13 +186,20 @@ main() {
 	vbo.bufferVertexAttrs(std::ref(Rectangle::verticies), GL_STATIC_DRAW);
 	vbo.configVertexAttrs(Rectangle::attrs);
 
+	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 1.0f);
+
 	ShaderProgram objProgram1(vertexShaderSource, lightFragmentShaderSource);
-	objProgram1.addUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram1.addUniform("lightColor", lightColor);
 
 	ShaderProgram objProgram2(vertexShaderSource, objectFragmentShaderSource);
-	objProgram2.addUniform("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-	objProgram2.addUniform("objectColor", glm::vec3(0.4f, 0.7f, 1.0f));
-	objProgram2.addUniform("lightPos", glm::vec3(0.0f, 0.0f, 1.0f));
+	objProgram2.addUniform("lightColor", lightColor);
+	objProgram2.addUniform("lightPos", lightPos);
+
+	objProgram2.addUniform("material.ambient", glm::vec3(1.0f, 0.647f, 0.0f));
+	objProgram2.addUniform("material.diffuse", glm::vec3(1.0f, 0.647f, 0.0f));
+	objProgram2.addUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	objProgram2.addUniform("material.shininess", 32.0f);
 
 	Viewport viewport;
 
