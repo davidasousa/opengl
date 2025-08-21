@@ -4,8 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../stb_image.h"
 
-Texture::Texture(unsigned int _shaderProgram, std::string _textureName) : 
-	shaderProgram(_shaderProgram), textureName(_textureName) {}
+Texture::Texture(unsigned int _shaderProgram) : shaderProgram(_shaderProgram), arrayPos(0) {}
 
 static fileFormat 
 getInternalFormat(std::string filepath) {
@@ -25,7 +24,7 @@ getInternalFormat(std::string filepath) {
 
 // Returns Pos On Load, -1 On Error
 void 
-Texture::loadTexture(const std::string filepath, bool flipImage) {
+Texture::loadAddTexture(const std::string filepath, std::string name, bool flipImage) {
 	int width, height, nrChannels;	
 	if(flipImage) { stbi_set_flip_vertically_on_load(true); }
 	else { stbi_set_flip_vertically_on_load(false); }
@@ -33,6 +32,7 @@ Texture::loadTexture(const std::string filepath, bool flipImage) {
 	unsigned char *data = stbi_load(filepath.c_str(), &width, &height, &nrChannels, 0);
 	if(!data) { std::cout << stbi_failure_reason() << std::endl; }
 
+	unsigned int textureID;
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -46,11 +46,15 @@ Texture::loadTexture(const std::string filepath, bool flipImage) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		break;
 	case fileFormat::PNG:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		break;
 	}
 
 	glGenerateMipmap(GL_TEXTURE_2D);
+
+	textureNames[arrayPos] = name;
+	textureIds[arrayPos] = textureID;
+	arrayPos++;
 	
 	stbi_image_free(data);
 }
@@ -58,11 +62,16 @@ Texture::loadTexture(const std::string filepath, bool flipImage) {
 void 
 Texture::bindTextureUnit() {
 	glUseProgram(shaderProgram);
-	glUniform1i(glGetUniformLocation(shaderProgram, textureName.c_str()), 0);
+	for(size_t idx = 0; idx < arrayPos; idx++) {
+		const char* name = textureNames[idx].c_str();
+		glUniform1i(glGetUniformLocation(shaderProgram, name), idx);
+	}
 }
 
 void 
 Texture::bindTexture() {
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	for(size_t idx = 0; idx < arrayPos; idx++) {
+		glActiveTexture(GL_TEXTURE0 + idx);
+		glBindTexture(GL_TEXTURE_2D, textureIds[idx]);
+	}
 }

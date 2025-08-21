@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 
 // STL Libraries
-#include <unordered_map>
+#include <array>
 #include <string>
 #include <iostream>
 
@@ -18,12 +18,13 @@ class
 Texture {
 private:
 	unsigned int shaderProgram;
-	std::string textureName;
-	unsigned int textureID;
+	size_t arrayPos;
+	std::array<std::string, MAX_TEXTURE_UNITS> textureNames;
+	std::array<unsigned int, MAX_TEXTURE_UNITS> textureIds;
 
 public:
-	Texture(unsigned int _shaderProgram, std::string _textureName);
-	void loadTexture(const std::string filepath, bool flipImage = false);
+	Texture(unsigned int _shaderProgram);
+	void loadAddTexture(const std::string filepath, std::string name, bool flipImage = false);
 	void bindTextureUnit(); 	// Bind Texture Units To Shader
 	void bindTexture(); 		 	// Bind Textures To Texture Units (In Rendering)
 };

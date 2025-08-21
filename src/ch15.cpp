@@ -68,7 +68,7 @@ const char* objectFragmentShaderSource = R"GLSL(
 
 	struct Material {
 		sampler2D diffuse;
-		vec3 specular;
+		sampler2D specular;
 		float shininess;
 	};
 
@@ -97,13 +97,11 @@ const char* objectFragmentShaderSource = R"GLSL(
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specular = light.specular * (spec * material.specular);
-
-	vec3 result = ambient + diffuse + specular;
+	vec3 specular = vec3(2.0f) * light.specular * spec * vec3(texture(material.specular, TexCoords));
 
 	void main()
 	{
-		FragColor = vec4(result, 1.0);
+		FragColor = vec4(ambient + diffuse + specular, 1.0);
 	}
 )GLSL";
 
@@ -206,16 +204,18 @@ main() {
 	ShaderProgram objProgram2(vertexShaderSource, objectFragmentShaderSource);
 	objProgram2.addUniform("lightPos", lightPos);
 
-	objProgram2.addUniform("light.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
-	objProgram2.addUniform("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
-	objProgram2.addUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram2.addUniform("light.ambient", glm::vec3(0.8f, 0.8f, 0.8f));
+	objProgram2.addUniform("light.diffuse", glm::vec3(0.8f, 0.8f, 0.8f));
+	objProgram2.addUniform("light.specular", glm::vec3(0.8f, 0.8f, 0.8f));
 
 	objProgram2.addUniform("material.diffuse", 0);
-	objProgram2.addUniform("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram2.addUniform("material.specular", 1);
 	objProgram2.addUniform("material.shininess", 32.0f);
 
-	Texture texture(objProgram2.getShaderProgram(), "material.diffuse");
-	texture.loadTexture("src/recourses/container.jpg");
+	Texture texture(objProgram2.getShaderProgram());
+	texture.loadAddTexture("src/recourses/container2.png", "material.diffuse");
+	texture.loadAddTexture("src/recourses/container2_specular.png", "material.specular");
+	texture.bindTextureUnit();
 
 	Viewport viewport;
 
@@ -245,13 +245,12 @@ main() {
 		objProgram2.addUniform("viewPos", camera.getCamPos());
 		objProgram2.bindUniforms();
 
-		viewport.modelMatTranslate((shiftVector){2.0f, 1.0f, -1.0f});
+		viewport.modelMatTranslate((shiftVector){1.0f, 1.0f, -1.0f});
 		viewport.viewSetLookAt(camera);
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
 
 		viewport.bindViewportTransform(objProgram2.getShaderProgram());
 
-		texture.bindTextureUnit();
 		texture.bindTexture();
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 
