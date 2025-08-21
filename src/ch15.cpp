@@ -24,9 +24,11 @@ const char* vertexShaderSource = R"GLSL(
 	#version 330 core
 	layout (location = 0) in vec3 aPos;
 	layout (location = 1) in vec3 aNormal;
+	layout (location = 2) in vec2 aTexCoords;
 
 	out vec3 FragPos;
 	out vec3 Normal;
+	out vec2 TexCoords;
 
 	uniform mat4 modelMat;
 	uniform mat4 viewMat;
@@ -35,8 +37,10 @@ const char* vertexShaderSource = R"GLSL(
 	void main() 
 	{
 		gl_Position = projectionMat * viewMat * modelMat * vec4(aPos, 1.0);
+
 		FragPos = vec3(modelMat * vec4(aPos, 1.0f)); // Model Matrix Yields The Position Of The Object
 		Normal = aNormal;
+		TexCoords = aTexCoords;
 	}
 )GLSL";
 
@@ -60,10 +64,10 @@ const char* objectFragmentShaderSource = R"GLSL(
 
 	in vec3 FragPos;
 	in vec3 Normal;
+	in vec3 TexCoords;
 
 	struct Material {
-		vec3 ambient;
-		vec3 diffuse;
+		sampler2D diffuse;
 		vec3 specular;
 		float shininess;
 	};
@@ -74,21 +78,21 @@ const char* objectFragmentShaderSource = R"GLSL(
 	uniform vec3 viewPos;
 
 	// Ambient
-	vec3 ambient = vec3(0.7) * (lightColor * material.ambient);
+	vec3 ambient = lightColor * material.diffuse;
 
 	// Diffuse
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = vec3(0.7) * (lightColor * (diff * material.diffuse));
+	vec3 diffuse = lightColor * diff * vec3(texture(material.diffuse, TexCoords));
 	
 	// Specular
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specular = vec3(1.0) * (lightColor * (spec * material.specular));
+	vec3 specular = lightColor * (spec * material.specular);
 
-	vec3 result = (ambient + diffuse + specular);
+	vec3 result = ambient + diffuse + specular;
 
 	void main()
 	{
@@ -196,10 +200,14 @@ main() {
 	objProgram2.addUniform("lightColor", lightColor);
 	objProgram2.addUniform("lightPos", lightPos);
 
+
 	objProgram2.addUniform("material.ambient", glm::vec3(1.0f, 0.647f, 0.0f));
-	objProgram2.addUniform("material.diffuse", glm::vec3(1.0f, 0.647f, 0.0f));
+	objProgram2.addUniform("material.diffuse", 0);
 	objProgram2.addUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 	objProgram2.addUniform("material.shininess", 32.0f);
+
+	Texture texture(objProgram2.getShaderProgram(), "material.diffuse");
+	texture.loadTexture("src/recourses/container.jpg");
 
 	Viewport viewport;
 
@@ -224,8 +232,8 @@ main() {
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 
 		// Object
-
 		glUseProgram(objProgram2.getShaderProgram());
+
 		objProgram2.addUniform("viewPos", camera.getCamPos());
 		objProgram2.bindUniforms();
 
@@ -234,6 +242,8 @@ main() {
 		viewport.projectionSetPerspective(45.0f, aspectRatio, 0.1f, 100.0f);
 
 		viewport.bindViewportTransform(objProgram2.getShaderProgram());
+
+		texture.bindTexture();
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 
 		// Unbind
