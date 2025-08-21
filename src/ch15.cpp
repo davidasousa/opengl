@@ -201,12 +201,11 @@ main() {
 	objProgram2.addUniform("lightPos", lightPos);
 
 	objProgram2.addUniform("material.diffuse", 0);
-	objProgram2.addUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
+	objProgram2.addUniform("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	objProgram2.addUniform("material.shininess", 32.0f);
 
 	Texture texture(objProgram2.getShaderProgram(), "material.diffuse");
 	texture.loadTexture("src/recourses/container.jpg");
-	texture.bindTextureUnit();
 
 	Viewport viewport;
 
@@ -242,6 +241,7 @@ main() {
 
 		viewport.bindViewportTransform(objProgram2.getShaderProgram());
 
+		texture.bindTextureUnit();
 		texture.bindTexture();
 		glDrawArrays(GL_TRIANGLES, 0, 36);	
 
