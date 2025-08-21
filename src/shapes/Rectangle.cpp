@@ -3,7 +3,7 @@
 std::vector<attrVec> Rectangle::attrs = {
 	{0, 3, 8, 0}, // Vertecies
 	{1, 3, 8, 3}, // Normals
-	{1, 3, 8, 3}  // TexCoords
+	{2, 2, 8, 5}  // TexCoords
 };
 
 std::vector<float> Rectangle::verticies = {

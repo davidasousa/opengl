@@ -64,7 +64,7 @@ const char* objectFragmentShaderSource = R"GLSL(
 
 	in vec3 FragPos;
 	in vec3 Normal;
-	in vec3 TexCoords;
+	in vec2 TexCoords;
 
 	struct Material {
 		sampler2D diffuse;
@@ -78,7 +78,7 @@ const char* objectFragmentShaderSource = R"GLSL(
 	uniform vec3 viewPos;
 
 	// Ambient
-	vec3 ambient = lightColor * material.diffuse;
+	vec3 ambient = lightColor * vec3(texture(material.diffuse, TexCoords));
 
 	// Diffuse
 	vec3 norm = normalize(Normal);
@@ -200,14 +200,13 @@ main() {
 	objProgram2.addUniform("lightColor", lightColor);
 	objProgram2.addUniform("lightPos", lightPos);
 
-
-	objProgram2.addUniform("material.ambient", glm::vec3(1.0f, 0.647f, 0.0f));
 	objProgram2.addUniform("material.diffuse", 0);
 	objProgram2.addUniform("material.specular", glm::vec3(0.5f, 0.5f, 0.5f));
 	objProgram2.addUniform("material.shininess", 32.0f);
 
 	Texture texture(objProgram2.getShaderProgram(), "material.diffuse");
 	texture.loadTexture("src/recourses/container.jpg");
+	texture.bindTextureUnit();
 
 	Viewport viewport;
 
