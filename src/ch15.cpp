@@ -72,25 +72,32 @@ const char* objectFragmentShaderSource = R"GLSL(
 		float shininess;
 	};
 
+	struct LightObject {
+		vec3 ambient;
+		vec3 diffuse;
+		vec3 specular;
+	};
+
 	uniform Material material;
-	uniform vec3 lightColor;
+	uniform LightObject light;
+
 	uniform vec3 lightPos;
 	uniform vec3 viewPos;
 
 	// Ambient
-	vec3 ambient = lightColor * vec3(texture(material.diffuse, TexCoords));
+	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 
 	// Diffuse
 	vec3 norm = normalize(Normal);
 	vec3 lightDir = normalize(lightPos - FragPos);
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = lightColor * diff * vec3(texture(material.diffuse, TexCoords));
+	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
 	
 	// Specular
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specular = lightColor * (spec * material.specular);
+	vec3 specular = light.specular * (spec * material.specular);
 
 	vec3 result = ambient + diffuse + specular;
 
@@ -197,8 +204,11 @@ main() {
 	objProgram1.addUniform("lightColor", lightColor);
 
 	ShaderProgram objProgram2(vertexShaderSource, objectFragmentShaderSource);
-	objProgram2.addUniform("lightColor", lightColor);
 	objProgram2.addUniform("lightPos", lightPos);
+
+	objProgram2.addUniform("light.ambient", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram2.addUniform("light.diffuse", glm::vec3(1.0f, 1.0f, 1.0f));
+	objProgram2.addUniform("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
 	objProgram2.addUniform("material.diffuse", 0);
 	objProgram2.addUniform("material.specular", glm::vec3(1.0f, 1.0f, 1.0f));
